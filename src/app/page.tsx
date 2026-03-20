@@ -6,6 +6,7 @@ import { FloatingCartButton } from "@/components/FloatingCartButton";
 import { OrderingGrid } from "@/components/OrderingGrid";
 import { WhyCheeziousSection } from "@/components/WhyCheeziousSection";
 import { CheeziousLogo } from "@/components/CheeziousLogo";
+import { LoyaltyRewardsBanner } from "@/components/LoyaltyRewardsBanner";
 
 export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -133,6 +134,9 @@ export default function Home() {
           </div>
         )}
       </header>
+
+      {/* Loyalty Rewards Banner */}
+      <LoyaltyRewardsBanner />
 
       {/* HERO */}
       <section 

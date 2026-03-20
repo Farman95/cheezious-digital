@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import Image from "next/image";
 import { useCart } from "@/context/CartContext";
 import { menuItems } from "@/data/menu-items";
+import { OrderCustomizationModal } from "./OrderCustomizationModal";
 
 const CATEGORIES = ["All", "Starters", "Pizza", "Burger", "Roll", "Sandwich", "Pasta", "Platter", "Deals 🔥", "Sides"] as const;
 
@@ -11,6 +12,7 @@ export function OrderingGrid() {
   const { addItem } = useCart();
   const [activeCategory, setActiveCategory] = useState<(typeof CATEGORIES)[number]>("All");
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedItem, setSelectedItem] = useState<typeof menuItems[0] | null>(null);
 
   // Simulate loading
   useEffect(() => {
@@ -96,6 +98,17 @@ const getOriginalPriceDisplay = (priceNumber: number, itemId: string) => {
     return wasPrices[itemId] || `Rs. ${Math.round(priceNumber * 1.25 / 10) * 10}`;
   };
 
+  const handleAddClick = (item: typeof menuItems[0]) => {
+    setSelectedItem(item);
+  };
+
+  const handleConfirm = (quantity: number, size: "small" | "regular" | "large", instructions: string) => {
+    if (selectedItem) {
+      addItem(selectedItem, quantity, size, instructions);
+      setSelectedItem(null);
+    }
+  };
+
   return (
     <section className="mx-auto max-w-6xl px-4 pb-16 pt-6 md:px-6 md:pt-8">
       {/* Horizontal Category Bar */}
@@ -160,6 +173,9 @@ const getOriginalPriceDisplay = (priceNumber: number, itemId: string) => {
                     fill
                     className="object-cover"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    loading="lazy"
+                    placeholder="blur"
+                    blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAICAgIChQDDwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoGSj/2wBDAQcHBwoIChMICChMGhYaGCgoGCgoGCgoGCgoGCgoGCgoGCgoGCgoGCgoGCgoGCgoGCgoGCgoGCgoGCgoGCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8VAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCwAA8A/9k="
                   />
                 </div>
 
@@ -183,9 +199,9 @@ const getOriginalPriceDisplay = (priceNumber: number, itemId: string) => {
                   </div>
                   <button
                     type="button"
-                    onClick={() => addItem(item)}
+                    onClick={() => handleAddClick(item)}
                     className="flex h-10 w-10 items-center justify-center rounded-full bg-[#E8420A] text-white shadow-md transition-transform hover:scale-[1.05] hover:bg-[#C73A08] focus:outline-none focus:ring-2 focus:ring-[#E8420A] focus:ring-offset-2"
-                    aria-label={`Add ${item.name} to cart`}
+                    aria-label={`Customize and add ${item.name} to cart`}
                   >
                     <span className="text-lg font-black">+</span>
                   </button>
@@ -193,6 +209,15 @@ const getOriginalPriceDisplay = (priceNumber: number, itemId: string) => {
               </article>
             ))}
       </div>
+
+      {/* Order Customization Modal */}
+      {selectedItem && (
+        <OrderCustomizationModal
+          item={selectedItem}
+          onClose={() => setSelectedItem(null)}
+          onConfirm={handleConfirm}
+        />
+      )}
     </section>
   );
 }

@@ -4,6 +4,8 @@ export interface CartItem {
   priceDisplay: string;
   priceNumber: number;
   quantity: number;
+  size?: "small" | "regular" | "large";
+  instructions?: string;
 }
 
 export interface MenuItemData {

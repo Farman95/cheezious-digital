@@ -34,6 +34,9 @@ export default function CheckoutPage() {
   const [locationMessage, setLocationMessage] = useState("");
   const [phoneValid, setPhoneValid] = useState<boolean | null>(null);
   const [showOrderSummary, setShowOrderSummary] = useState(false);
+  const [deliveryMode, setDeliveryMode] = useState<"now" | "later">("now");
+  const [deliveryDate, setDeliveryDate] = useState<"today" | "tomorrow">("today");
+  const [deliveryTime, setDeliveryTime] = useState("12:00");
 
   const selectedBranch = useMemo(
     () => branches.find((b) => b.id === selectedBranchId) ?? null,
@@ -407,6 +410,73 @@ export default function CheckoutPage() {
 
             {errors.branch && (
               <p className="mt-2 text-xs text-[#E8420A]">{errors.branch}</p>
+            )}
+          </div>
+
+          {/* Delivery Time Section */}
+          <div className="rounded-2xl border border-white/50 bg-white/80 p-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#1A1A1A]/70">
+              Delivery Time
+            </p>
+            <div className="mt-3 space-y-3">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  checked={deliveryMode === "now"}
+                  onChange={() => setDeliveryMode("now")}
+                  className="w-4 h-4 text-[#E8420A]"
+                />
+                <span className="text-sm font-medium text-[#1A1A1A]">Deliver Now (ASAP)</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  checked={deliveryMode === "later"}
+                  onChange={() => setDeliveryMode("later")}
+                  className="w-4 h-4 text-[#E8420A]"
+                />
+                <span className="text-sm font-medium text-[#1A1A1A]">Schedule for Later</span>
+              </label>
+            </div>
+
+            {deliveryMode === "later" && (
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-[0.1em] text-[#1A1A1A]/70">
+                    Date
+                  </label>
+                  <select
+                    value={deliveryDate}
+                    onChange={(e) => setDeliveryDate(e.target.value as "today" | "tomorrow")}
+                    className="mt-1.5 w-full rounded-xl border border-white/60 bg-white px-4 py-2 text-sm text-[#1A1A1A] focus:border-[#E8420A] focus:outline-none focus:ring-2 focus:ring-[#E8420A]/20"
+                  >
+                    <option value="today">Today</option>
+                    <option value="tomorrow">Tomorrow</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-[0.1em] text-[#1A1A1A]/70">
+                    Time
+                  </label>
+                  <select
+                    value={deliveryTime}
+                    onChange={(e) => setDeliveryTime(e.target.value)}
+                    className="mt-1.5 w-full rounded-xl border border-white/60 bg-white px-4 py-2 text-sm text-[#1A1A1A] focus:border-[#E8420A] focus:outline-none focus:ring-2 focus:ring-[#E8420A]/20"
+                  >
+                    {Array.from({ length: 12 }, (_, i) => {
+                      const hour = 12 + i;
+                      const ampm = hour >= 12 ? "PM" : "AM";
+                      const displayHour = hour > 12 ? hour - 12 : hour;
+                      const timeStr = `${displayHour.toString().padStart(2, "0")}:00 ${ampm}`;
+                      return (
+                        <option key={i} value={timeStr}>
+                          {timeStr}
+                        </option>
+                      );
+                    })}
+                  </select>
+                </div>
+              </div>
             )}
           </div>
 

@@ -15,7 +15,7 @@ interface CartContextValue {
   itemCount: number;
   totalPrice: number;
   isSidebarOpen: boolean;
-  addItem: (item: MenuItemData) => void;
+  addItem: (item: MenuItemData, quantity?: number, size?: "small" | "regular" | "large", instructions?: string) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, delta: number) => void;
   clearCart: () => void;
@@ -30,12 +30,37 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const addItem = useCallback((item: MenuItemData) => {
+  const addItem = useCallback((item: MenuItemData, quantity = 1, size?: "small" | "regular" | "large", instructions?: string) => {
     setCart((prev) => {
-      const existing = prev.find((i) => i.id === item.id);
+      // Create a unique key for this item with customization
+      const customizationKey = `${item.id}-${size || "regular"}-${instructions || ""}`;
+      
+      // For items with customization, always add as new line item
+      if (size || instructions) {
+        const sizeMultiplier = size === "small" ? 0.85 : size === "large" ? 1.2 : 1;
+        const adjustedPrice = item.priceNumber * sizeMultiplier;
+        
+        return [
+          ...prev,
+          {
+            id: customizationKey,
+            name: item.name,
+            priceDisplay: `Rs. ${adjustedPrice.toLocaleString("en-PK", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`,
+            priceNumber: adjustedPrice,
+            quantity,
+            size: size || "regular",
+            instructions,
+          },
+        ];
+      }
+
+      // Default behavior for items without customization (when called directly)
+      const existing = prev.find((i) => i.id === item.id && !i.size && !i.instructions);
       if (existing) {
         return prev.map((i) =>
-          i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
+          i.id === item.id && !i.size && !i.instructions
+            ? { ...i, quantity: i.quantity + quantity }
+            : i
         );
       }
       return [
@@ -45,16 +70,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
           name: item.name,
           priceDisplay: item.priceDisplay,
           priceNumber: item.priceNumber,
-          quantity: 1,
+          quantity,
         },
       ];
     });
 
-    // Global "added to cart" toast (bottom notification).
+    // Global "added to cart" toast
     if (typeof window !== "undefined") {
       window.dispatchEvent(
         new CustomEvent("cheezious:toast", {
-          detail: { message: "+1 added!" },
+          detail: { message: `+${quantity} added!` },
         })
       );
     }

@@ -5,8 +5,10 @@ import { useEffect, useMemo, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
 const STEPS = [
-  { label: "Order Placed" },
+  { label: "Order Received" },
+  { label: "Confirmed" },
   { label: "Being Prepared" },
+  { label: "Quality Check" },
   { label: "Out for Delivery" },
   { label: "Delivered" },
 ] as const;
@@ -37,15 +39,15 @@ function TrackOrderContent() {
     const start = Date.now();
     const interval = window.setInterval(() => {
       const elapsed = Date.now() - start;
-      const nextStep = Math.min(3, Math.floor(elapsed / 6000));
+      const nextStep = Math.min(5, Math.floor(elapsed / 6000));
       setCurrentStep(nextStep);
-      if (nextStep === 3) window.clearInterval(interval);
+      if (nextStep === 5) window.clearInterval(interval);
     }, 500);
     return () => window.clearInterval(interval);
   }, []);
 
   const progressPercent = useMemo(() => {
-    return (currentStep / 3) * 100;
+    return (currentStep / 5) * 100;
   }, [currentStep]);
 
   return (
@@ -101,7 +103,7 @@ function TrackOrderContent() {
               />
             </div>
 
-            <ol className="mt-6 grid grid-cols-4 gap-2">
+            <ol className="mt-6 grid grid-cols-6 gap-1 md:gap-2">
               {STEPS.map((step, idx) => {
                 const done = idx < currentStep;
                 const active = idx === currentStep;
@@ -117,7 +119,7 @@ function TrackOrderContent() {
                       }`}
                     >
                       {active ? (
-                        <span className="cheez-pulse-dot block h-3 w-3 rounded-full bg-cheez-red" />
+                        <span className="animate-pulse block h-3 w-3 rounded-full bg-cheez-red" />
                       ) : (
                         <span
                           className={`block h-3 w-3 rounded-full ${
@@ -127,7 +129,7 @@ function TrackOrderContent() {
                       )}
                     </div>
                     <p
-                      className={`mt-2 text-[11px] font-semibold text-center ${
+                      className={`mt-2 text-[10px] font-semibold text-center leading-tight ${
                         done || active ? "text-cheez-ink" : "text-cheez-ink/50"
                       }`}
                     >
@@ -148,12 +150,62 @@ function TrackOrderContent() {
             </p>
             <p className="mt-1 text-sm text-cheez-ink/70">
               {currentStep === 0 && "Kitchen has received your order."}
-              {currentStep === 1 && "Preparing fresh cheez & toppings."}
-              {currentStep === 2 && "Rider is on the way—stay ready."}
-              {currentStep === 3 && "Delivered. Enjoy your cheezious moment."}
+              {currentStep === 1 && "Order confirmed. Preparing your order."}
+              {currentStep === 2 && "Preparing fresh cheez & toppings."}
+              {currentStep === 3 && "Quality check in progress."}
+              {currentStep === 4 && "Rider is on the way—stay ready."}
+              {currentStep === 5 && "Delivered. Enjoy your cheezious moment."}
             </p>
           </div>
         </div>
+
+        {/* Live Map Placeholder */}
+        {currentStep >= 4 && (
+          <div className="mt-6 rounded-2xl border border-white/50 bg-yellow-50/80 p-6">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cheez-ink/60 mb-3">
+              Live Location
+            </p>
+            <div className="relative h-48 w-full rounded-lg bg-yellow-100 border border-yellow-300 flex items-center justify-center overflow-hidden">
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="relative">
+                  <div className="animate-pulse absolute w-8 h-8 bg-cheez-red rounded-full opacity-75"></div>
+                  <div className="w-8 h-8 bg-cheez-red rounded-full flex items-center justify-center">
+                    <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <p className="absolute bottom-3 text-xs font-semibold text-yellow-700">Rider on the way</p>
+            </div>
+          </div>
+        )}
+
+        {/* Rider Details */}
+        {currentStep >= 4 && (
+          <div className="mt-6 rounded-2xl border border-white/50 bg-cheez-card/70 p-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cheez-ink/60">
+              Your Rider
+            </p>
+            <div className="mt-4 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="h-12 w-12 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-500 flex items-center justify-center">
+                  <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-sm font-black text-cheez-ink">Muhammad Ali</p>
+                  <p className="text-xs font-semibold text-cheez-ink/70">⭐ 4.8 rating</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-xs font-semibold text-cheez-ink/70">Status</p>
+                <p className="text-sm font-bold text-cheez-red">On the way</p>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="mt-6 flex items-center justify-between gap-3">
           <Link
