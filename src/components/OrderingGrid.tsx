@@ -31,7 +31,7 @@ export function OrderingGrid() {
   return (
     <section className="mx-auto max-w-6xl px-4 pb-16 pt-6 md:px-6 md:pt-8">
       {/* Horizontal Category Bar */}
-      <div className="mb-4 flex gap-2 overflow-x-auto pb-1 md:mb-6">
+      <div className="mb-4 flex gap-2 overflow-x-auto pb-1 md:mb-6 scrollbar-hide">
         {CATEGORIES.map((cat) => {
           const isActive = activeCategory === cat;
           return (

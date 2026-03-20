@@ -43,7 +43,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen text-cheez-ink">
+    <div className="min-h-screen text-cheez-ink mb-20 md:mb-0">
       {/* Sticky Navbar (becomes white on scroll) */}
       <header
         className={`sticky top-0 z-50 transition-colors ${
@@ -75,7 +75,7 @@ export default function Home() {
             >
               Track Order
             </button>
-            <button className="hidden rounded-full bg-[#E8420A] px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-white shadow-md hover:bg-[#C73A08] md:inline-flex">
+            <button className="rounded-full bg-[#E8420A] px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-white shadow-md hover:bg-[#C73A08] md:px-4 md:inline-flex">
               Login
             </button>
           </div>
@@ -94,8 +94,8 @@ export default function Home() {
         <div className="relative mx-auto max-w-6xl px-4 pt-24 md:px-6 md:pt-28">
           <div className="flex flex-col items-center justify-between gap-10 md:flex-row md:gap-12">
             {/* LEFT */}
-            <div className="w-full md:max-w-[46%]">
-              <h1 className="text-[40px] font-black leading-[0.95] tracking-tight text-black sm:text-[54px] lg:text-[62px]">
+            <div className="w-full order-1 md:max-w-[46%] md:order-1">
+              <h1 className="text-[28px] font-black leading-[0.95] tracking-tight text-black md:text-[40px] lg:text-[62px]">
                 Pakistan Ka Favorite Cheez
               </h1>
               <p className="mt-4 text-base font-semibold text-[#1A1A1A]/60 sm:text-lg">
@@ -133,9 +133,9 @@ export default function Home() {
             </div>
 
             {/* RIGHT */}
-            <div className="relative flex w-full items-center justify-center md:max-w-[54%]">
+            <div className="relative flex w-full items-center justify-center md:max-w-[54%] order-2 md:order-2">
               <div className="relative">
-                <div className="h-[320px] w-[320px] rounded-full bg-white/20 backdrop-blur-xl border border-white/60 shadow-[0_0_0_10px_rgba(245,197,0,0.25),0_40px_120px_rgba(232,66,10,0.14),0_0_80px_rgba(245,197,0,0.25)] md:h-[420px] md:w-[420px]" />
+                <div className="h-[280px] w-[280px] mx-auto md:h-[320px] md:w-[320px] rounded-full bg-white/20 backdrop-blur-xl border border-white/60 shadow-[0_0_0_10px_rgba(245,197,0,0.25),0_40px_120px_rgba(232,66,10,0.14),0_0_80px_rgba(245,197,0,0.25)] lg:h-[420px] lg:w-[420px]" />
 
                 <div className="absolute inset-[18px] overflow-hidden rounded-full bg-white/10 border border-white/30">
                   {/* Inline SVG pizza (melted cheese, pepperoni, peppers, olives) */}
@@ -362,16 +362,18 @@ export default function Home() {
                   href="https://apps.apple.com/pk/app/cheezious/id1535315212"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block rounded-2xl border border-white/20 bg-white/5 px-4 py-3 text-sm font-semibold text-white/90 transition-colors hover:bg-white/10"
+                  className="flex items-center justify-center gap-2 rounded-xl bg-black px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-gray-800 w-full md:w-auto"
                 >
+                  <span className="text-lg">🍎</span>
                   App Store
                 </a>
                 <a
                   href="https://play.google.com/store/apps/details?id=com.blink.cheezious"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block rounded-2xl border border-white/20 bg-white/5 px-4 py-3 text-sm font-semibold text-white/90 transition-colors hover:bg-white/10"
+                  className="flex items-center justify-center gap-2 rounded-xl bg-black px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-gray-800 w-full md:w-auto"
                 >
+                  <span className="text-lg">▶</span>
                   Play Store
                 </a>
               </div>

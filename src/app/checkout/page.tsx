@@ -265,7 +265,7 @@ export default function CheckoutPage() {
 
           <div className="mt-6 text-center">
             <a
-              href={`https://wa.me/923335946547?text=${encodeURIComponent(`Hi Cheezious! I just placed Order #${orderId}. Please confirm my order. Thank you!`)}`}
+              href={`https://wa.me/923001000001?text=${encodeURIComponent(`Hi Cheezious! I just placed Order #${orderId}. Please confirm my order. Thank you!`)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-full bg-green-600 px-6 py-3 text-sm font-semibold text-white shadow-lg transition-colors hover:bg-green-700"
