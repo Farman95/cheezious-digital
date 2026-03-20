@@ -13,6 +13,7 @@ export interface MenuItemData {
   category: string;
   priceNumber: number;
   priceDisplay: string;
+  image?: string;
 }
 
 export interface Branch {
