@@ -1,0 +1,60 @@
+import type { MenuItemData } from "@/lib/cart-types";
+
+export const menuItems: MenuItemData[] = [
+  {
+    id: "crown-crust",
+    name: "Crown Crust",
+    description: "Signature stuffed crust loaded with molten cheez and our special blend.",
+    category: "Pizza",
+    priceNumber: 1499,
+    priceDisplay: "Rs. 1,499",
+  },
+  {
+    id: "beasty-burger",
+    name: "Beasty Burger",
+    description: "Double patty, triple cheez, crispy onion rings, and our beast sauce.",
+    category: "Burger",
+    priceNumber: 699,
+    priceDisplay: "Rs. 699",
+  },
+  {
+    id: "bihari-roll",
+    name: "Bihari Roll",
+    description: "Tender Bihari kabab wrapped in paratha with cheez and chutney.",
+    category: "Roll",
+    priceNumber: 449,
+    priceDisplay: "Rs. 449",
+  },
+  {
+    id: "cheezy-volcano",
+    name: "Cheezy Volcano Pizza",
+    description: "Triple-cheez lava, loaded toppings, crisp golden crust.",
+    category: "Pizza",
+    priceNumber: 1799,
+    priceDisplay: "Rs. 1,799",
+  },
+  {
+    id: "smash-burger-double",
+    name: "Smash Burger Double",
+    description: "Two smashed patties, American cheez, pickles, and special sauce.",
+    category: "Burger",
+    priceNumber: 849,
+    priceDisplay: "Rs. 849",
+  },
+  {
+    id: "loaded-platter",
+    name: "Loaded Platter",
+    description: "Wings, tenders, cheezy fries, and dips — perfect for sharing.",
+    category: "Platter",
+    priceNumber: 1299,
+    priceDisplay: "Rs. 1,299",
+  },
+  {
+    id: "cheezy-fries",
+    name: "Cheezy Fries",
+    description: "Crispy fries smothered in our signature cheez sauce.",
+    category: "Sides",
+    priceNumber: 349,
+    priceDisplay: "Rs. 349",
+  },
+];
