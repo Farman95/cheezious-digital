@@ -59,68 +59,58 @@ export default function CheckoutPage() {
     return Array.from(map.entries()).sort(([a], [b]) => a.localeCompare(b));
   }, [filteredBranches]);
 
-  // Branch coordinates for geolocation
-  interface BranchCoord {
-    lat: number;
-    lng: number;
-    name: string;
-  }
-  
-  interface NearestBranch {
-    id: string;
-    name: string;
-  }
-
-  const branchCoordinates: Record<string, BranchCoord> = {
-    "rawalpindi-saddar": { lat: 33.5978, lng: 73.0479, name: "Rawalpindi Saddar" },
-    "islamabad-f10": { lat: 33.6938, lng: 72.9888, name: "Islamabad F-10" },
-    "lahore-dha-phase-4": { lat: 31.4697, lng: 74.4013, name: "Lahore DHA" },
-    "karachi-clifton": { lat: 24.8138, lng: 67.0300, name: "Karachi Clifton" },
-    "faisalabad-rehmat-chowk": { lat: 31.4180, lng: 73.0790, name: "Faisalabad" }
+  // Haversine formula to calculate distance between two coordinates
+  const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+    const R = 6371; // Earth's radius in kilometers
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = 
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * Math.PI / 180) * 
+      Math.cos(lat2 * Math.PI / 180) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   };
 
   const detectNearestBranch = () => {
     if (!navigator.geolocation) {
-      setLocationMessage("Geolocation is not supported by your browser.");
+      setLocationMessage("Location not supported on this browser. Please select manually.");
       return;
     }
 
     setIsDetectingLocation(true);
-    setLocationMessage("Finding nearest branch...");
+    setLocationMessage("📍 Finding your location...");
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const userLat = position.coords.latitude;
         const userLng = position.coords.longitude;
         
-        let nearestBranch: NearestBranch | null = null;
+        let nearestBranch = branches[0];
         let minDistance = Infinity;
         
-        for (const branchId in branchCoordinates) {
-          const coords = branchCoordinates[branchId];
-          const distance = Math.sqrt(
-            Math.pow(userLat - coords.lat, 2) + Math.pow(userLng - coords.lng, 2)
-          );
+        // Find the nearest branch using Haversine formula
+        for (const branch of branches) {
+          const distance = getDistance(userLat, userLng, branch.lat, branch.lng);
           
           if (distance < minDistance) {
             minDistance = distance;
-            nearestBranch = { id: branchId, name: coords.name };
+            nearestBranch = branch;
           }
         }
         
-        if (nearestBranch) {
-          setSelectedBranchId(nearestBranch.id);
-          setLocationMessage(`✓ Nearest branch selected: ${nearestBranch.name}`);
-        }
-        
+        setSelectedBranchId(nearestBranch.id);
+        setLocationMessage(`✓ Nearest branch selected: ${nearestBranch.name}`);
         setIsDetectingLocation(false);
       },
       (error) => {
         setIsDetectingLocation(false);
         if (error.code === 1) {
-          setLocationMessage("Location access denied. Please select branch manually below.");
-        } else {
+          setLocationMessage("Location access denied. Please select branch manually.");
+        } else if (error.code === 2) {
           setLocationMessage("Unable to detect location. Please select branch manually.");
+        } else {
+          setLocationMessage("Try again or select branch manually.");
         }
       }
     );
@@ -344,7 +334,7 @@ export default function CheckoutPage() {
               {isDetectingLocation ? (
                 <>
                   <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#E8420A] border-t-transparent"></div>
-                  Finding nearest branch...
+                  📍 Finding your location...
                 </>
               ) : (
                 <>

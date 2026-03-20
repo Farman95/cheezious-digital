@@ -22,4 +22,6 @@ export interface Branch {
   name: string;
   city: string;
   dummyWhatsApp: string;
+  lat: number;
+  lng: number;
 }
