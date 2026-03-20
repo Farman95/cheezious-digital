@@ -25,9 +25,24 @@ export function OrderingGrid() {
     return menuItems.filter((item) => item.category === activeCategory);
   }, [activeCategory]);
 
-  const getOriginalPriceDisplay = (priceNumber: number, itemId: string) => {
-    // Real "was" prices from the menu data
-    const wasPrices: Record<string, string> = {
+  const getCategoryFallbackImage = (category: string) => {
+  const fallbackImages: Record<string, string> = {
+    "Pizza": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400",
+    "Burger": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400",
+    "Roll": "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400",
+    "Sandwich": "https://images.unsplash.com/photo-1539252554453-80ab65ce3586?w=400",
+    "Pasta": "https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?w=400",
+    "Platter": "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400",
+    "Deals 🔥": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400",
+    "Sides": "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=400",
+    "Starters": "https://images.unsplash.com/photo-1527477396000-e27163b481c2?w=400"
+  };
+  return fallbackImages[category] || "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400";
+};
+
+const getOriginalPriceDisplay = (priceNumber: number, itemId: string) => {
+  // Real "was" prices from the menu data
+  const wasPrices: Record<string, string> = {
       "calzone-chunks": "Rs. 499",
       "hot-wings-6pcs": "Rs. 749",
       "hot-wings-12pcs": "Rs. 1,399",
@@ -140,7 +155,7 @@ export function OrderingGrid() {
                 {/* Food Image */}
                 <div className="relative h-[140px] md:h-[180px] overflow-hidden rounded-t-[16px]">
                   <Image
-                    src={item.image || "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400"}
+                    src={item.image || getCategoryFallbackImage(item.category)}
                     alt={item.name}
                     fill
                     className="object-cover"

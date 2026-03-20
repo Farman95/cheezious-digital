@@ -283,7 +283,7 @@ export const menuItems: MenuItemData[] = [
     category: "Pasta",
     priceNumber: 599,
     priceDisplay: "Rs. 599",
-    image: "https://images.unsplash.com/photo-1551183053-bf91798d792b?w=400",
+    image: "https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?w=400",
     mostLoved: true
   },
   {
@@ -293,7 +293,7 @@ export const menuItems: MenuItemData[] = [
     category: "Pasta",
     priceNumber: 649,
     priceDisplay: "Rs. 649",
-    image: "https://images.unsplash.com/photo-1551183053-bf91798d792b?w=400"
+    image: "https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?w=400"
   },
   {
     id: "peri-peri-pasta",
@@ -302,7 +302,7 @@ export const menuItems: MenuItemData[] = [
     category: "Pasta",
     priceNumber: 649,
     priceDisplay: "Rs. 649",
-    image: "https://images.unsplash.com/photo-1551183053-bf91798d792b?w=400"
+    image: "https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?w=400"
   },
 
   // PLATTER
@@ -352,7 +352,7 @@ export const menuItems: MenuItemData[] = [
     category: "Deals 🔥",
     priceNumber: 750,
     priceDisplay: "Rs. 750",
-    image: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400"
+    image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400"
   },
   {
     id: "regular-pizza-deal",
@@ -361,7 +361,7 @@ export const menuItems: MenuItemData[] = [
     category: "Deals 🔥",
     priceNumber: 1450,
     priceDisplay: "Rs. 1,450",
-    image: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400"
+    image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400"
   },
   {
     id: "large-pizza-deal",
@@ -370,7 +370,7 @@ export const menuItems: MenuItemData[] = [
     category: "Deals 🔥",
     priceNumber: 1990,
     priceDisplay: "Rs. 1,990",
-    image: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400"
+    image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400"
   },
   {
     id: "squad-deal",
@@ -379,7 +379,7 @@ export const menuItems: MenuItemData[] = [
     category: "Deals 🔥",
     priceNumber: 2500,
     priceDisplay: "Rs. 2,500",
-    image: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400"
+    image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400"
   },
   {
     id: "burger-combo",
@@ -388,7 +388,7 @@ export const menuItems: MenuItemData[] = [
     category: "Deals 🔥",
     priceNumber: 1550,
     priceDisplay: "Rs. 1,550",
-    image: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400"
+    image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400"
   },
   {
     id: "zalmi-meal-deal",
@@ -397,7 +397,7 @@ export const menuItems: MenuItemData[] = [
     category: "Deals 🔥",
     priceNumber: 1799,
     priceDisplay: "Rs. 1,799",
-    image: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400"
+    image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400"
   },
 
   // SIDES
