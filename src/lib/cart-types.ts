@@ -14,6 +14,7 @@ export interface MenuItemData {
   priceNumber: number;
   priceDisplay: string;
   image?: string;
+  mostLoved?: boolean;
 }
 
 export interface Branch {

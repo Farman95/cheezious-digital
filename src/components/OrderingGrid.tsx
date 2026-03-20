@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useCart } from "@/context/CartContext";
 import { menuItems } from "@/data/menu-items";
 
-const CATEGORIES = ["All", "Pizza", "Burger", "Platter", "Roll", "Sides"] as const;
+const CATEGORIES = ["All", "Starters", "Pizza", "Burger", "Roll", "Sandwich", "Pasta", "Platter", "Deals 🔥", "Sides"] as const;
 
 export function OrderingGrid() {
   const { addItem } = useCart();
@@ -26,10 +26,59 @@ export function OrderingGrid() {
   }, [activeCategory]);
 
   const getOriginalPriceDisplay = (priceNumber: number, itemId: string) => {
-    if (itemId === "crown-crust") return "Rs. 1,799";
-    // Fake "was" price for a high-conversion deal feeling.
-    const original = Math.round(priceNumber * 1.25 / 10) * 10;
-    return `Rs. ${original.toLocaleString("en-PK")}`;
+    // Real "was" prices from the menu data
+    const wasPrices: Record<string, string> = {
+      "calzone-chunks": "Rs. 499",
+      "hot-wings-6pcs": "Rs. 749",
+      "hot-wings-12pcs": "Rs. 1,399",
+      "chicken-nuggets": "Rs. 449",
+      "cheesy-fries-starters": "Rs. 440",
+      "spring-rolls": "Rs. 399",
+      "chicken-piece": "Rs. 349",
+      "crown-crust": "Rs. 1,799",
+      "smokey-thrill": "Rs. 1,699",
+      "chicken-fajita": "Rs. 1,599",
+      "cheezious-special": "Rs. 1,749",
+      "chicken-pepperoni": "Rs. 1,549",
+      "behari-kabab-pizza": "Rs. 1,649",
+      "malai-tikka-pizza": "Rs. 1,699",
+      "peri-peri-pizza": "Rs. 1,649",
+      "zalmi-pizza": "Rs. 1,749",
+      "bazinga-burger": "Rs. 870",
+      "bazinga-supreme": "Rs. 1,049",
+      "double-bazinga": "Rs. 1,150",
+      "cheesy-delight-burger": "Rs. 799",
+      "smash-burger-double": "Rs. 1,060",
+      "reggy-burger": "Rs. 499",
+      "bihari-roll": "Rs. 560",
+      "arabic-roll": "Rs. 499",
+      "bazooka-wrap": "Rs. 850",
+      "shawarma": "Rs. 549",
+      "mexican-sandwich": "Rs. 849",
+      "euro-sandwich": "Rs. 849",
+      "pizza-stacker": "Rs. 899",
+      "crunchy-chicken-pasta": "Rs. 749",
+      "fettuccine-alfredo": "Rs. 799",
+      "peri-peri-pasta": "Rs. 799",
+      "special-roasted-platter": "Rs. 1,599",
+      "classic-roll-platter": "Rs. 1,499",
+      "loaded-platter": "Rs. 1,620",
+      "family-deal-platter": "Rs. 2,999",
+      "small-pizza-deal": "Rs. 999",
+      "regular-pizza-deal": "Rs. 1,799",
+      "large-pizza-deal": "Rs. 2,499",
+      "squad-deal": "Rs. 2,999",
+      "burger-combo": "Rs. 1,999",
+      "zalmi-meal-deal": "Rs. 2,199",
+      "cheesy-fries-sides": "Rs. 440",
+      "nuggets-6pcs-sides": "Rs. 449",
+      "garlic-bread": "Rs. 299",
+      "coleslaw": "Rs. 199",
+      "regular-drink": "Rs. 199",
+      "liter-drink": "Rs. 299"
+    };
+  
+    return wasPrices[itemId] || `Rs. ${Math.round(priceNumber * 1.25 / 10) * 10}`;
   };
 
   return (
@@ -46,7 +95,9 @@ export function OrderingGrid() {
               disabled={isLoading}
               className={`whitespace-nowrap rounded-[99px] border-[1.5px] px-4 py-2 text-sm font-black uppercase tracking-[0.18em] transition-colors ${
                 isActive
-                  ? "border-transparent bg-[#F5C500] text-[#1A1A1A]"
+                  ? cat === "Deals 🔥"
+                    ? "border-transparent bg-[#E8420A] text-white"
+                    : "border-transparent bg-[#F5C500] text-[#1A1A1A]"
                   : "border-[#E0D080] bg-white text-[#1A1A1A]"
               }`}
             >
@@ -80,7 +131,7 @@ export function OrderingGrid() {
                 key={item.id}
                 className="group relative flex flex-col rounded-[16px] border border-[#F0E68C] bg-white shadow-[0_2px_12px_rgba(0,0,0,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(232,66,10,0.15)]"
               >
-                {item.id === "crown-crust" && (
+                {item.mostLoved && (
                   <div className="absolute right-3 top-3 z-10 rounded-full bg-[#F5C500] px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#1A1A1A] shadow-sm">
                     Most Loved
                   </div>
