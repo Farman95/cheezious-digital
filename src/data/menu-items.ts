@@ -283,7 +283,7 @@ export const menuItems: MenuItemData[] = [
     category: "Pasta",
     priceNumber: 599,
     priceDisplay: "Rs. 599",
-    image: "https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?w=400",
+    image: "https://images.unsplash.com/photo-1563243577-4e0556c4ca73?w=400",
     mostLoved: true
   },
   {
