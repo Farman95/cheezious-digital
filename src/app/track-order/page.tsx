@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
 const STEPS = [
@@ -18,7 +18,7 @@ function formatMMSS(seconds: number) {
   return `${mm}:${ss.toString().padStart(2, "0")}`;
 }
 
-export default function TrackOrderPage() {
+function TrackOrderContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get("orderId") ?? "";
 
@@ -171,6 +171,14 @@ export default function TrackOrderPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function TrackOrderPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <TrackOrderContent />
+    </Suspense>
   );
 }
 

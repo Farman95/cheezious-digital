@@ -60,7 +60,18 @@ export default function CheckoutPage() {
   }, [filteredBranches]);
 
   // Branch coordinates for geolocation
-  const branchCoordinates = {
+  interface BranchCoord {
+    lat: number;
+    lng: number;
+    name: string;
+  }
+  
+  interface NearestBranch {
+    id: string;
+    name: string;
+  }
+
+  const branchCoordinates: Record<string, BranchCoord> = {
     "rawalpindi-saddar": { lat: 33.5978, lng: 73.0479, name: "Rawalpindi Saddar" },
     "islamabad-f10": { lat: 33.6938, lng: 72.9888, name: "Islamabad F-10" },
     "lahore-dha-phase-4": { lat: 31.4697, lng: 74.4013, name: "Lahore DHA" },
@@ -82,10 +93,11 @@ export default function CheckoutPage() {
         const userLat = position.coords.latitude;
         const userLng = position.coords.longitude;
         
-        let nearestBranch: { id: string; name: string } | null = null;
+        let nearestBranch: NearestBranch | null = null;
         let minDistance = Infinity;
         
-        Object.entries(branchCoordinates).forEach(([branchId, coords]) => {
+        for (const branchId in branchCoordinates) {
+          const coords = branchCoordinates[branchId];
           const distance = Math.sqrt(
             Math.pow(userLat - coords.lat, 2) + Math.pow(userLng - coords.lng, 2)
           );
@@ -94,7 +106,7 @@ export default function CheckoutPage() {
             minDistance = distance;
             nearestBranch = { id: branchId, name: coords.name };
           }
-        });
+        }
         
         if (nearestBranch) {
           setSelectedBranchId(nearestBranch.id);
