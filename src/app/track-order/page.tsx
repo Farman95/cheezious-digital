@@ -25,7 +25,7 @@ function TrackOrderContent() {
   const orderId = searchParams.get("orderId") ?? "";
 
   const [currentStep, setCurrentStep] = useState(0);
-  const [countdownSeconds, setCountdownSeconds] = useState(20 * 60);
+  const [countdownSeconds, setCountdownSeconds] = useState(30 * 60); // 30 minutes
 
   useEffect(() => {
     const tick = window.setInterval(() => {
@@ -34,17 +34,9 @@ function TrackOrderContent() {
     return () => window.clearInterval(tick);
   }, []);
 
-  useEffect(() => {
-    // Fake progression for UI realism.
-    const start = Date.now();
-    const interval = window.setInterval(() => {
-      const elapsed = Date.now() - start;
-      const nextStep = Math.min(5, Math.floor(elapsed / 6000));
-      setCurrentStep(nextStep);
-      if (nextStep === 5) window.clearInterval(interval);
-    }, 500);
-    return () => window.clearInterval(interval);
-  }, []);
+  const handleNextStep = () => {
+    setCurrentStep((prev) => Math.min(5, prev + 1));
+  };
 
   const progressPercent = useMemo(() => {
     return (currentStep / 5) * 100;
@@ -79,10 +71,10 @@ function TrackOrderContent() {
           <div className="flex items-center justify-between gap-4">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cheez-ink/60">
-                Estimated time
+                Estimated delivery
               </p>
               <p className="mt-1 text-3xl font-black tracking-tight text-cheez-red">
-                {formatMMSS(countdownSeconds)}
+                25-35 min
               </p>
             </div>
             <div className="text-right">
@@ -206,6 +198,17 @@ function TrackOrderContent() {
             </div>
           </div>
         )}
+
+        {/* Demo Button */}
+        <div className="mt-6">
+          <button
+            onClick={handleNextStep}
+            disabled={currentStep === 5}
+            className="w-full rounded-full bg-cheez-ink/10 py-3 text-center text-xs font-semibold uppercase tracking-[0.18em] text-cheez-ink transition-colors hover:bg-cheez-ink/20 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Simulate Next Step →
+          </button>
+        </div>
 
         <div className="mt-6 flex items-center justify-between gap-3">
           <Link
