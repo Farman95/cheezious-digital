@@ -18,7 +18,7 @@ export const menuItems: MenuItemData[] = [
     category: "Starters",
     priceNumber: 599,
     priceDisplay: "Rs. 599",
-    image: "https://images.unsplash.com/photo-1527477396000-e27163b481c2?w=400"
+    image: "https://images.unsplash.com/photo-1562967916-eb82221dfb92?w=400"
   },
   {
     id: "hot-wings-12pcs",
@@ -27,7 +27,7 @@ export const menuItems: MenuItemData[] = [
     category: "Starters",
     priceNumber: 1099,
     priceDisplay: "Rs. 1,099",
-    image: "https://images.unsplash.com/photo-1527477396000-e27163b481c2?w=400"
+    image: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400"
   },
   {
     id: "chicken-nuggets",
@@ -36,7 +36,7 @@ export const menuItems: MenuItemData[] = [
     category: "Starters",
     priceNumber: 349,
     priceDisplay: "Rs. 349",
-    image: "https://images.unsplash.com/photo-1527477396000-e27163b481c2?w=400"
+    image: "https://images.unsplash.com/photo-1562967916-eb82221dfb92?w=400"
   },
   {
     id: "cheesy-fries-starters",
@@ -63,7 +63,7 @@ export const menuItems: MenuItemData[] = [
     category: "Starters",
     priceNumber: 299,
     priceDisplay: "Rs. 299",
-    image: "https://images.unsplash.com/photo-1527477396000-e27163b481c2?w=400"
+    image: "https://images.unsplash.com/photo-1562967916-eb82221dfb92?w=400"
   },
 
   // PIZZA
@@ -84,7 +84,7 @@ export const menuItems: MenuItemData[] = [
     category: "Pizza",
     priceNumber: 1450,
     priceDisplay: "Rs. 1,450",
-    image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400"
+    image: "https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?w=400"
   },
   {
     id: "chicken-fajita",
@@ -102,7 +102,7 @@ export const menuItems: MenuItemData[] = [
     category: "Pizza",
     priceNumber: 1499,
     priceDisplay: "Rs. 1,499",
-    image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400"
+    image: "https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?w=400"
   },
   {
     id: "chicken-pepperoni",
@@ -120,7 +120,7 @@ export const menuItems: MenuItemData[] = [
     category: "Pizza",
     priceNumber: 1399,
     priceDisplay: "Rs. 1,399",
-    image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400"
+    image: "https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?w=400"
   },
   {
     id: "malai-tikka-pizza",
@@ -138,7 +138,7 @@ export const menuItems: MenuItemData[] = [
     category: "Pizza",
     priceNumber: 1399,
     priceDisplay: "Rs. 1,399",
-    image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400"
+    image: "https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?w=400"
   },
   {
     id: "zalmi-pizza",
@@ -168,7 +168,7 @@ export const menuItems: MenuItemData[] = [
     category: "Burger",
     priceNumber: 849,
     priceDisplay: "Rs. 849",
-    image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400"
+    image: "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=400"
   },
   {
     id: "double-bazinga",
@@ -186,7 +186,7 @@ export const menuItems: MenuItemData[] = [
     category: "Burger",
     priceNumber: 649,
     priceDisplay: "Rs. 649",
-    image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400"
+    image: "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=400"
   },
   {
     id: "smash-burger-double",
@@ -225,7 +225,7 @@ export const menuItems: MenuItemData[] = [
     category: "Roll",
     priceNumber: 399,
     priceDisplay: "Rs. 399",
-    image: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400"
+    image: "https://images.unsplash.com/photo-1527477396000-e27163b481c2?w=400"
   },
   {
     id: "bazooka-wrap",
@@ -243,7 +243,7 @@ export const menuItems: MenuItemData[] = [
     category: "Roll",
     priceNumber: 449,
     priceDisplay: "Rs. 449",
-    image: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400"
+    image: "https://images.unsplash.com/photo-1527477396000-e27163b481c2?w=400"
   },
 
   // SANDWICH
@@ -263,7 +263,7 @@ export const menuItems: MenuItemData[] = [
     category: "Sandwich",
     priceNumber: 699,
     priceDisplay: "Rs. 699",
-    image: "https://images.unsplash.com/photo-1539252554453-80ab65ce3586?w=400"
+    image: "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=400"
   },
   {
     id: "pizza-stacker",
@@ -293,7 +293,7 @@ export const menuItems: MenuItemData[] = [
     category: "Pasta",
     priceNumber: 649,
     priceDisplay: "Rs. 649",
-    image: "https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?w=400"
+    image: "https://images.unsplash.com/photo-1563243577-4e0556c4ca73?w=400"
   },
   {
     id: "peri-peri-pasta",
@@ -302,7 +302,7 @@ export const menuItems: MenuItemData[] = [
     category: "Pasta",
     priceNumber: 649,
     priceDisplay: "Rs. 649",
-    image: "https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?w=400"
+    image: "https://images.unsplash.com/photo-1621996346565-e3dbc353d2e2?w=400"
   },
 
   // PLATTER
@@ -323,7 +323,7 @@ export const menuItems: MenuItemData[] = [
     category: "Platter",
     priceNumber: 1199,
     priceDisplay: "Rs. 1,199",
-    image: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400"
+    image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400"
   },
   {
     id: "loaded-platter",
@@ -332,7 +332,7 @@ export const menuItems: MenuItemData[] = [
     category: "Platter",
     priceNumber: 1299,
     priceDisplay: "Rs. 1,299",
-    image: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400"
+    image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400"
   },
   {
     id: "family-deal-platter",
@@ -341,7 +341,7 @@ export const menuItems: MenuItemData[] = [
     category: "Platter",
     priceNumber: 2499,
     priceDisplay: "Rs. 2,499",
-    image: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400"
+    image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400"
   },
 
   // DEALS
@@ -417,7 +417,7 @@ export const menuItems: MenuItemData[] = [
     category: "Sides",
     priceNumber: 349,
     priceDisplay: "Rs. 349",
-    image: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=400"
+    image: "https://images.unsplash.com/photo-1562967916-eb82221dfb92?w=400"
   },
   {
     id: "garlic-bread",
