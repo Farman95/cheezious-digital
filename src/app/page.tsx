@@ -9,6 +9,7 @@ import { CheeziousLogo } from "@/components/CheeziousLogo";
 
 export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showScrollIndicator, setShowScrollIndicator] = useState(true);
 
   useEffect(() => {
@@ -43,7 +44,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen text-cheez-ink mb-20 md:mb-0">
+    <div className="min-h-screen text-cheez-ink pb-24 md:pb-0">
       {/* Sticky Navbar (becomes white on scroll) */}
       <header
         className={`sticky top-0 z-50 transition-colors ${
@@ -53,8 +54,21 @@ export default function Home() {
         }`}
       >
         <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 md:px-6">
+          {/* Mobile Hamburger Menu */}
+          <button
+            type="button"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="md:hidden flex flex-col justify-center items-center w-6 h-6 gap-1.5"
+            aria-label="Toggle menu"
+          >
+            <span className={`block w-5 h-0.5 bg-[#1A1A1A] transition-transform ${isMobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
+            <span className={`block w-5 h-0.5 bg-[#1A1A1A] transition-opacity ${isMobileMenuOpen ? 'opacity-0' : ''}`}></span>
+            <span className={`block w-5 h-0.5 bg-[#1A1A1A] transition-transform ${isMobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
+          </button>
+
           <CheeziousLogo />
 
+          {/* Desktop Navigation */}
           <div className="hidden items-center gap-6 text-sm font-medium text-[#1A1A1A]/80 md:flex">
             <button className="rounded-full border border-[#E8420A]/20 px-4 py-1.5 text-xs uppercase tracking-wide hover:border-[#E8420A] hover:text-[#E8420A] transition-colors">
               Menu
@@ -80,6 +94,44 @@ export default function Home() {
             </button>
           </div>
         </nav>
+
+        {/* Mobile Menu Dropdown */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden border-t border-white/20 bg-white/95 backdrop-blur-xl">
+            <div className="px-4 py-4 space-y-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  alert("Feature coming soon");
+                }}
+                className="block w-full text-left rounded-lg px-4 py-3 text-sm font-medium text-[#1A1A1A] hover:bg-[#F5C500]/10 transition-colors"
+              >
+                Menu
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  alert("Feature coming soon");
+                }}
+                className="block w-full text-left rounded-lg px-4 py-3 text-sm font-medium text-[#1A1A1A] hover:bg-[#F5C500]/10 transition-colors"
+              >
+                Locations
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  alert("Feature coming soon");
+                }}
+                className="block w-full text-left rounded-lg px-4 py-3 text-sm font-medium text-[#1A1A1A] hover:bg-[#F5C500]/10 transition-colors"
+              >
+                Franchise
+              </button>
+            </div>
+          </div>
+        )}
       </header>
 
       {/* HERO */}
