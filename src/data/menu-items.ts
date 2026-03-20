@@ -27,7 +27,7 @@ export const menuItems: MenuItemData[] = [
     category: "Starters",
     priceNumber: 620,
     priceDisplay: "Rs. 620",
-    image: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400"
+    image: "https://images.unsplash.com/photo-1527477396000-e27163b481c2?w=400"
   },
   {
     id: "calzone-chunks",
