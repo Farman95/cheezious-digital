@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useSession, signIn, signOut } from "next-auth/react";
 import { CartSidebar } from "@/components/CartSidebar";
 import { FloatingCartButton } from "@/components/FloatingCartButton";
 import { OrderingGrid } from "@/components/OrderingGrid";
@@ -9,6 +10,7 @@ import { CheeziousLogo } from "@/components/CheeziousLogo";
 import { LoyaltyRewardsBanner } from "@/components/LoyaltyRewardsBanner";
 
 export default function Home() {
+  const { data: session, status } = useSession();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showScrollIndicator, setShowScrollIndicator] = useState(true);
@@ -90,9 +92,44 @@ export default function Home() {
             >
               Track Order
             </button>
-            <button className="rounded-full bg-[#E8420A] px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-white shadow-md hover:bg-[#C73A08] md:px-4 md:inline-flex">
-              Login
-            </button>
+            {status === "loading" ? (
+              <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse"></div>
+            ) : session ? (
+              <div className="relative group">
+                <button
+                  type="button"
+                  className="flex items-center gap-2 rounded-full border border-[#E8420A]/30 px-3 py-1.5 text-xs font-semibold text-[#E8420A] shadow-sm hover:border-[#E8420A] hover:bg-[#E8420A]/5 transition-colors"
+                >
+                  <img
+                    src={session.user?.image || ""}
+                    alt={session.user?.name || ""}
+                    className="w-5 h-5 rounded-full"
+                  />
+                  <span className="hidden md:inline">{session.user?.name?.split(' ')[0]}</span>
+                </button>
+                <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div className="p-3 border-b border-gray-100">
+                    <p className="text-sm font-medium text-gray-900">{session.user?.name}</p>
+                    <p className="text-xs text-gray-500">{session.user?.email}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => signOut()}
+                    className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors rounded-b-lg"
+                  >
+                    Sign Out
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => signIn("google")}
+                className="rounded-full bg-[#E8420A] px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-white shadow-md hover:bg-[#C73A08] md:px-4 md:inline-flex transition-colors"
+              >
+                Login
+              </button>
+            )}
           </div>
         </nav>
 
@@ -130,6 +167,47 @@ export default function Home() {
               >
                 Franchise
               </button>
+              {status === "loading" ? (
+                <div className="flex items-center gap-3 px-4 py-3">
+                  <div className="w-6 h-6 rounded-full bg-gray-200 animate-pulse"></div>
+                  <span className="text-sm text-gray-500">Loading...</span>
+                </div>
+              ) : session ? (
+                <>
+                  <div className="flex items-center gap-3 px-4 py-3 border-t border-gray-200">
+                    <img
+                      src={session.user?.image || ""}
+                      alt={session.user?.name || ""}
+                      className="w-6 h-6 rounded-full"
+                    />
+                    <div>
+                      <p className="text-sm font-medium text-[#1A1A1A]">{session.user?.name}</p>
+                      <p className="text-xs text-gray-500">{session.user?.email}</p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      signOut();
+                    }}
+                    className="block w-full text-left rounded-lg px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+                  >
+                    Sign Out
+                  </button>
+                </>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    signIn("google");
+                  }}
+                  className="block w-full text-left rounded-lg px-4 py-3 text-sm font-medium text-[#E8420A] hover:bg-[#E8420A]/10 transition-colors"
+                >
+                  Login with Google
+                </button>
+              )}
             </div>
           </div>
         )}
