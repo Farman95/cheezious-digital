@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useSession, signIn } from "next-auth/react";
 import { useCart } from "@/context/CartContext";
 import { branches } from "@/data/branches";
@@ -19,6 +20,7 @@ function generateOrderId() {
 
 export default function CheckoutPage() {
   const { data: session, status } = useSession();
+  const router = useRouter();
   const { cart, totalPrice, clearCart } = useCart();
   const [branchQuery, setBranchQuery] = useState("");
   const [selectedBranchId, setSelectedBranchId] = useState("");
@@ -157,44 +159,41 @@ export default function CheckoutPage() {
       if (!selectedBranch || !session) return;
       setIsSubmitting(true);
 
-      try {
-        const id = generateOrderId();
-        
-        // First, upsert user profile
-        await upsertUserProfile({
-          email: session.user?.email || '',
-          name: session.user?.name || '',
-          image: session.user?.image || ''
-        });
-        
-        const orderData: Omit<Order, 'id' | 'created_at' | 'updated_at'> = {
-          order_id: id,
-          user_id: session.user?.email || '',
-          user_email: session.user?.email || '',
-          user_name: session.user?.name || '',
-          items: cart,
-          total_amount: totalPrice,
-          status: 'pending',
-          branch_id: selectedBranch.id,
-          branch_name: selectedBranch.name,
-          delivery_address: address,
-          phone: phone,
-          payment_method: paymentMethod
-        };
+      const id = generateOrderId();
+      
+      // First, upsert user profile
+      await upsertUserProfile({
+        email: session.user?.email || '',
+        name: session.user?.name || '',
+        image: session.user?.image || ''
+      });
+      
+      const orderData: Omit<Order, 'id' | 'created_at' | 'updated_at'> = {
+        order_id: id,
+        user_id: session.user?.email || '',
+        user_email: session.user?.email || '',
+        user_name: session.user?.name || '',
+        items: cart,
+        total_amount: totalPrice,
+        status: 'pending',
+        branch_id: selectedBranch.id,
+        branch_name: selectedBranch.name,
+        delivery_address: address,
+        phone: phone,
+        payment_method: paymentMethod
+      };
 
-        await createOrder(orderData);
+      await createOrder(orderData);
 
-        setOrderId(id);
-        clearCart();
-        setShowSuccess(true);
-      } catch (error) {
-        console.error('Error placing order:', error);
-        alert('Failed to place order. Please try again.');
-      } finally {
-        setIsSubmitting(false);
-      }
+      clearCart();
+      setOrderId(id);
+      setShowSuccess(true);
+      setIsSubmitting(false);
+      
+      // Redirect to track order page
+      router.push(`/track-order?orderId=${id}`);
     },
-    [validate, clearCart, selectedBranch, session, cart, totalPrice, address, phone, paymentMethod]
+    [validate, clearCart, selectedBranch, session, cart, totalPrice, address, phone, paymentMethod, router]
   );
 
   if (cart.length === 0 && !showSuccess) {
