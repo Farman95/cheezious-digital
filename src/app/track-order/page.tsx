@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import { getOrderByOrderId, Order } from "@/lib/database";
 
 const STEPS = [
   { label: "Order Received" },
@@ -26,6 +27,9 @@ function TrackOrderContent() {
 
   const [currentStep, setCurrentStep] = useState(0);
   const [countdownSeconds, setCountdownSeconds] = useState(30 * 60); // 30 minutes
+  const [order, setOrder] = useState<Order | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const tick = window.setInterval(() => {
@@ -33,6 +37,40 @@ function TrackOrderContent() {
     }, 1000);
     return () => window.clearInterval(tick);
   }, []);
+
+  // Fetch order data from Supabase
+  useEffect(() => {
+    if (!orderId) {
+      setLoading(false);
+      return;
+    }
+
+    const fetchOrder = async () => {
+      try {
+        const orderData = await getOrderByOrderId(orderId);
+        setOrder(orderData);
+        
+        // Map order status to step
+        const statusStepMap: Record<string, number> = {
+          'pending': 0,
+          'confirmed': 1,
+          'preparing': 2,
+          'ready': 3,
+          'out_for_delivery': 4,
+          'delivered': 5,
+          'cancelled': 0
+        };
+        
+        setCurrentStep(statusStepMap[orderData.status] || 0);
+      } catch (err) {
+        setError('Order not found');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrder();
+  }, [orderId]);
 
   const handleNextStep = () => {
     setCurrentStep((prev) => Math.min(5, prev + 1));
@@ -59,12 +97,76 @@ function TrackOrderContent() {
       </header>
 
       <main className="mx-auto max-w-2xl px-4 py-8">
-        <h1 className="text-2xl font-black tracking-tight text-cheez-ink">
-          Live Order Tracking
-        </h1>
-        <p className="mt-1 text-sm text-cheez-ink/70">
-          Real-time feel (demo). Your cheez is moving.
-        </p>
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="w-8 h-8 rounded-full bg-cheez-red/20 animate-pulse mx-auto mb-4"></div>
+            <p className="text-sm text-cheez-ink/70">Loading order details...</p>
+          </div>
+        ) : error ? (
+          <div className="text-center py-12">
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </div>
+            <h2 className="text-xl font-semibold text-cheez-ink mb-2">Order Not Found</h2>
+            <p className="text-sm text-cheez-ink/70 mb-6">{error}</p>
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 rounded-full bg-cheez-red px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white transition-colors hover:bg-red-700"
+            >
+              Back to Menu
+            </Link>
+          </div>
+        ) : (
+          <>
+            <h1 className="text-2xl font-black tracking-tight text-cheez-ink">
+              Live Order Tracking
+            </h1>
+            <p className="mt-1 text-sm text-cheez-ink/70">
+              Real-time order status from our kitchen.
+            </p>
+
+            {/* Order Info */}
+            <div className="mt-6 rounded-3xl border border-white/60 bg-white/40 p-5 backdrop-blur-xl shadow-sm">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cheez-ink/60">
+                    Customer
+                  </p>
+                  <p className="mt-1 font-bold text-cheez-ink">
+                    {order?.user_name || 'Loading...'}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cheez-ink/60">
+                    Order ID
+                  </p>
+                  <p className="mt-1 font-mono text-sm font-bold text-cheez-ink">
+                    {order?.order_id || orderId || "—"}
+                  </p>
+                </div>
+              </div>
+              
+              <div className="mt-4 flex items-center justify-between gap-4">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cheez-ink/60">
+                    Total Amount
+                  </p>
+                  <p className="mt-1 font-bold text-cheez-ink">
+                    Rs. {order?.total_amount?.toLocaleString() || '—'}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cheez-ink/60">
+                    Status
+                  </p>
+                  <p className="mt-1 font-bold text-cheez-red capitalize">
+                    {order?.status?.replace('_', ' ') || 'Pending'}
+                  </p>
+                </div>
+              </div>
+            </div>
 
         {/* Progress Bar */}
         <div className="mt-6 rounded-3xl border border-white/60 bg-white/40 p-5 backdrop-blur-xl shadow-sm">
@@ -224,6 +326,8 @@ function TrackOrderContent() {
             New Order
           </Link>
         </div>
+          </>
+        )}
       </main>
     </div>
   );

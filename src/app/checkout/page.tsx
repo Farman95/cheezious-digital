@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useSession, signIn } from "next-auth/react";
 import { useCart } from "@/context/CartContext";
 import { branches } from "@/data/branches";
+import { createOrder, Order } from "@/lib/database";
 import { useCallback, useMemo, useState } from "react";
 
 function formatPrice(n: number) {
@@ -12,8 +13,8 @@ function formatPrice(n: number) {
 
 function generateOrderId() {
   const prefix = "CHZ";
-  const segment = () => Math.random().toString(36).slice(2, 6).toUpperCase();
-  return `${prefix}-${segment()}-${segment()}`;
+  const segment = Math.floor(1000 + Math.random() * 9000).toString();
+  return `${prefix}-${segment}`;
 }
 
 export default function CheckoutPage() {
@@ -150,20 +151,43 @@ export default function CheckoutPage() {
   }, [selectedBranchId, fullName, phone, address]);
 
   const handlePlaceOrder = useCallback(
-    (e: React.FormEvent) => {
+    async (e: React.FormEvent) => {
       e.preventDefault();
       if (!validate()) return;
-      if (!selectedBranch) return;
+      if (!selectedBranch || !session) return;
       setIsSubmitting(true);
 
-      const id = generateOrderId();
+      try {
+        const id = generateOrderId();
+        
+        const orderData: Omit<Order, 'id' | 'created_at' | 'updated_at'> = {
+          order_id: id,
+          user_id: session.user?.email || '',
+          user_email: session.user?.email || '',
+          user_name: session.user?.name || '',
+          items: cart,
+          total_amount: totalPrice,
+          status: 'pending',
+          branch_id: selectedBranch.id,
+          branch_name: selectedBranch.name,
+          delivery_address: address,
+          phone: phone,
+          payment_method: paymentMethod
+        };
 
-      setOrderId(id);
-      clearCart();
-      setShowSuccess(true);
-      setIsSubmitting(false);
+        await createOrder(orderData);
+
+        setOrderId(id);
+        clearCart();
+        setShowSuccess(true);
+      } catch (error) {
+        console.error('Error placing order:', error);
+        alert('Failed to place order. Please try again.');
+      } finally {
+        setIsSubmitting(false);
+      }
     },
-    [validate, clearCart, selectedBranch]
+    [validate, clearCart, selectedBranch, session, cart, totalPrice, address, phone, paymentMethod]
   );
 
   if (cart.length === 0 && !showSuccess) {
