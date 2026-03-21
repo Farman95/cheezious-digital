@@ -18,6 +18,38 @@ export interface Order {
   updated_at?: string
 }
 
+export interface UserProfile {
+  id?: string
+  user_id: string
+  email: string
+  name: string
+  avatar_url?: string
+  created_at?: string
+  updated_at?: string
+}
+
+export async function upsertUserProfile(user: { email: string; name: string; image?: string }) {
+  try {
+    const { data, error } = await supabase
+      .from('profiles')
+      .upsert({
+        user_id: user.email,
+        email: user.email,
+        name: user.name,
+        avatar_url: user.image,
+        updated_at: new Date().toISOString()
+      })
+      .select()
+      .single()
+
+    if (error) throw error
+    return data
+  } catch (error) {
+    console.error('Error upserting user profile:', error)
+    throw error
+  }
+}
+
 export async function createOrder(order: Omit<Order, 'id' | 'created_at' | 'updated_at'>) {
   try {
     const { data, error } = await supabase

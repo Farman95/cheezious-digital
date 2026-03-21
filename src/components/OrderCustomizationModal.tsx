@@ -38,7 +38,7 @@ export function OrderCustomizationModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
-      <div className="relative w-full max-w-md rounded-3xl border border-white/50 bg-white shadow-2xl">
+      <div className="relative w-full max-w-md rounded-3xl border border-white/50 bg-white shadow-2xl flex flex-col max-h-[90vh] md:max-h-[95vh]">
         {/* Close Button */}
         <button
           type="button"
@@ -49,7 +49,7 @@ export function OrderCustomizationModal({
         </button>
 
         {/* Item Image */}
-        <div className="relative h-48 w-full rounded-t-3xl overflow-hidden">
+        <div className="relative h-48 w-full rounded-t-3xl overflow-hidden flex-shrink-0">
           <Image
             src={item.image || "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400"}
             alt={item.name}
@@ -59,7 +59,8 @@ export function OrderCustomizationModal({
           />
         </div>
 
-        <div className="p-6">
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto p-6 pb-0">
           {/* Item Details */}
           <h2 className="text-2xl font-black text-[#1A1A1A]">{item.name}</h2>
           {item.description && (
@@ -145,12 +146,14 @@ export function OrderCustomizationModal({
               })}
             </p>
           </div>
+        </div>
 
-          {/* Add to Cart Button */}
+        {/* Sticky Footer with Add to Cart Button */}
+        <div className="sticky bottom-0 bg-white border-t border-gray-200 p-6 pt-4 flex-shrink-0">
           <button
             type="button"
             onClick={handleConfirm}
-            className="mt-6 w-full rounded-full bg-[#E8420A] px-4 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-white shadow-md transition-colors hover:bg-[#C73A08]"
+            className="w-full rounded-full bg-[#E8420A] px-4 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-white shadow-md transition-colors hover:bg-[#C73A08]"
           >
             Add to Cart
           </button>

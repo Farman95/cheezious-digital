@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useSession, signIn } from "next-auth/react";
 import { useCart } from "@/context/CartContext";
 import { branches } from "@/data/branches";
-import { createOrder, Order } from "@/lib/database";
+import { createOrder, Order, upsertUserProfile } from "@/lib/database";
 import { useCallback, useMemo, useState } from "react";
 
 function formatPrice(n: number) {
@@ -159,6 +159,13 @@ export default function CheckoutPage() {
 
       try {
         const id = generateOrderId();
+        
+        // First, upsert user profile
+        await upsertUserProfile({
+          email: session.user?.email || '',
+          name: session.user?.name || '',
+          image: session.user?.image || ''
+        });
         
         const orderData: Omit<Order, 'id' | 'created_at' | 'updated_at'> = {
           order_id: id,
