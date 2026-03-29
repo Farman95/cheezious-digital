@@ -5,8 +5,20 @@ import { useRouter } from "next/navigation";
 import { useSession, signIn } from "next-auth/react";
 import { useCart } from "@/context/CartContext";
 import { branches } from "@/data/branches";
-import { createOrder, Order, upsertUserProfile } from "@/lib/database";
-import { useCallback, useMemo, useState } from "react";
+import { 
+  createEnterpriseOrder, 
+  getNearestBranches, 
+  checkDeliveryCoverage,
+  validateCoupon,
+  applyCoupon,
+  trackAnalyticsEvent,
+  createNotification,
+  Order,
+  UserProfile,
+  Coupon
+} from "@/lib/enterprise-database";
+import { paymentProcessor, validateJazzCashRequest, validateEasyPaisaRequest, validateCardRequest } from "@/lib/payment-gateway";
+import { useCallback, useMemo, useState, useEffect } from "react";
 
 function formatPrice(n: number) {
   return "Rs. " + n.toLocaleString("en-PK");
@@ -31,13 +43,25 @@ export default function CheckoutPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderId, setOrderId] = useState<string | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<
-    "cod" | "jazzcash" | "easypaisa"
-  >("cod");
-  const [walletNumber, setWalletNumber] = useState("");
+  
+  // Enterprise features state
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
+  const [discountAmount, setDiscountAmount] = useState(0);
+  const [deliveryFee, setDeliveryFee] = useState(50);
+  const [taxAmount, setTaxAmount] = useState(0);
+  const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null);
   const [isDetectingLocation, setIsDetectingLocation] = useState(false);
   const [locationMessage, setLocationMessage] = useState("");
-  const [phoneValid, setPhoneValid] = useState<boolean | null>(null);
+  const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
+  const [selectedSavedAddress, setSelectedSavedAddress] = useState("");
+  const [orderNotes, setOrderNotes] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState<"cod" | "jazzcash" | "easypaisa" | "card">("cod");
+  const [paymentDetails, setPaymentDetails] = useState<any>({});
+  const [showPaymentForm, setShowPaymentForm] = useState(false);
+  const [loyaltyPoints, setLoyaltyPoints] = useState(0);
+  const [useLoyaltyPoints, setUseLoyaltyPoints] = useState(false);
+  const [estimatedDeliveryTime, setEstimatedDeliveryTime] = useState<Date | null>(null);
   const [showOrderSummary, setShowOrderSummary] = useState(false);
   const [deliveryMode, setDeliveryMode] = useState<"now" | "later">("now");
   const [deliveryDate, setDeliveryDate] = useState<"today" | "tomorrow">("today");
@@ -131,11 +155,6 @@ export default function CheckoutPage() {
 
   const handlePhoneChange = (value: string) => {
     setPhone(value);
-    if (value.trim()) {
-      setPhoneValid(validatePhone(value));
-    } else {
-      setPhoneValid(null);
-    }
   };
 
   const validate = useCallback(() => {
@@ -152,21 +171,216 @@ export default function CheckoutPage() {
     return Object.keys(next).length === 0;
   }, [selectedBranchId, fullName, phone, address]);
 
-  const handlePlaceOrder = async () => {
-  setIsSubmitting(true);
-  
-  // Fake delay take lage ke processing ho rahi hai
-  setTimeout(() => {
-    setIsSubmitting(false);
-    // Error dikhane ke bajaye success dikhao aur redirect karo
-    router.push('/track-order'); 
-  }, 2000);
-};
+  // Enterprise functions
+  const detectUserLocation = useCallback(async () => {
+    if (!navigator.geolocation) {
+      setLocationMessage("Location not supported on this browser. Please select branch manually.");
+      return;
+    }
 
-const handleFormSubmit = (e: React.FormEvent) => {
-  e.preventDefault();
-  handlePlaceOrder();
-};
+    setIsDetectingLocation(true);
+    setLocationMessage("📍 Finding your location...");
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        setUserLocation({ lat: latitude, lng: longitude });
+
+        try {
+          const nearestBranches = await getNearestBranches(latitude, longitude, 10);
+          if (nearestBranches.length > 0) {
+            const nearest = nearestBranches[0];
+            setSelectedBranchId(nearest.id);
+            setLocationMessage(`✓ Nearest branch selected: ${nearest.name}`);
+            
+            // Calculate delivery fee based on distance
+            const distance = Math.sqrt(
+              Math.pow(latitude - nearest.location_lat, 2) + 
+              Math.pow(longitude - nearest.location_lng, 2)
+            );
+            setDeliveryFee(distance > 5 ? 100 : 50);
+          } else {
+            setLocationMessage("No branches found in your area. Please select manually.");
+          }
+        } catch (error) {
+          setLocationMessage("Unable to find nearest branch. Please select manually.");
+        }
+        
+        setIsDetectingLocation(false);
+      },
+      (error) => {
+        setIsDetectingLocation(false);
+        if (error.code === 1) {
+          setLocationMessage("Location access denied. Please select branch manually.");
+        } else {
+          setLocationMessage("Unable to detect location. Please select manually.");
+        }
+      }
+    );
+  }, []);
+
+  const applyCouponCode = useCallback(async () => {
+    if (!couponCode.trim()) return;
+
+    try {
+      const coupon = await validateCoupon(couponCode, totalPrice, session?.user?.email || undefined);
+      let discount = 0;
+
+      if (coupon.type === 'percentage') {
+        discount = (totalPrice * coupon.value) / 100;
+        if (coupon.maximum_discount_amount) {
+          discount = Math.min(discount, coupon.maximum_discount_amount);
+        }
+      } else if (coupon.type === 'fixed') {
+        discount = coupon.value;
+      } else if (coupon.type === 'free_delivery') {
+        discount = deliveryFee;
+      }
+
+      setAppliedCoupon(coupon);
+      setDiscountAmount(discount);
+      setErrors({ ...errors, coupon: '' });
+    } catch (error) {
+      setErrors({ ...errors, coupon: error instanceof Error ? error.message : 'Invalid coupon' });
+    }
+  }, [couponCode, totalPrice, session?.user?.email, deliveryFee, errors]);
+
+  const removeCoupon = useCallback(() => {
+    setAppliedCoupon(null);
+    setDiscountAmount(0);
+    setCouponCode('');
+    setErrors({ ...errors, coupon: '' });
+  }, [errors]);
+
+  const calculateTotal = useMemo(() => {
+    const subtotal = totalPrice;
+    const tax = subtotal * 0.16; // 16% tax
+    const pointsDiscount = useLoyaltyPoints ? Math.min(loyaltyPoints, subtotal * 0.1) : 0; // Max 10% with points
+    const finalDiscount = discountAmount + pointsDiscount;
+    const total = subtotal + deliveryFee + tax - finalDiscount;
+    
+    setTaxAmount(tax);
+    return Math.max(0, total);
+  }, [totalPrice, deliveryFee, discountAmount, loyaltyPoints, useLoyaltyPoints]);
+
+  const handlePlaceOrder = async () => {
+    setIsSubmitting(true);
+    
+    try {
+      // Validate payment details for non-COD methods
+      if (paymentMethod !== 'cod') {
+        let validationErrors: string[] = [];
+        
+        if (paymentMethod === 'jazzcash') {
+          validationErrors = validateJazzCashRequest(paymentDetails);
+        } else if (paymentMethod === 'easypaisa') {
+          validationErrors = validateEasyPaisaRequest(paymentDetails);
+        } else if (paymentMethod === 'card') {
+          validationErrors = validateCardRequest(paymentDetails);
+        }
+
+        if (validationErrors.length > 0) {
+          setErrors({ ...errors, payment: validationErrors.join(', ') });
+          setIsSubmitting(false);
+          return;
+        }
+      }
+
+      // Create enterprise order
+      const orderData: Omit<Order, 'id' | 'order_number' | 'created_at' | 'updated_at'> = {
+        user_id: session?.user?.email || '',
+        user_email: session?.user?.email || '',
+        user_name: session?.user?.name || '',
+        user_phone: phone,
+        items: cart,
+        subtotal: totalPrice,
+        delivery_fee: deliveryFee,
+        tax_amount: taxAmount,
+        discount_amount: discountAmount,
+        total_amount: calculateTotal,
+        payment_method: paymentMethod,
+        payment_status: paymentMethod === 'cod' ? 'pending' : 'pending',
+        delivery_address: address,
+        delivery_instructions: orderNotes,
+        preparation_time_minutes: 20,
+        coupon_code: appliedCoupon?.code,
+        loyalty_points_used: useLoyaltyPoints ? Math.min(loyaltyPoints, totalPrice * 0.1) : 0
+      };
+
+      const order = await createEnterpriseOrder(orderData);
+
+      // Apply coupon usage if coupon was used
+      if (appliedCoupon) {
+        await applyCoupon(appliedCoupon.id!, order.id!, discountAmount);
+      }
+
+      // Process payment for non-COD methods
+      if (paymentMethod !== 'cod') {
+        const paymentRequest = {
+          ...paymentDetails,
+          amount: calculateTotal,
+          currency: 'PKR',
+          orderId: order.id!,
+          customerEmail: session?.user?.email || '',
+          customerName: session?.user?.name || '',
+          customerPhone: phone,
+          description: `Order ${order.order_number}`,
+          returnUrl: `${window.location.origin}/track-order?orderId=${order.order_number}`,
+          cancelUrl: `${window.location.origin}/checkout`
+        };
+
+        const paymentResult = await paymentProcessor.processPayment(paymentMethod, paymentRequest);
+        
+        if (!paymentResult.success) {
+          setErrors({ ...errors, payment: paymentResult.error || 'Payment failed' });
+          setIsSubmitting(false);
+          return;
+        }
+
+        if (paymentResult.paymentUrl) {
+          // Redirect to payment gateway
+          window.location.href = paymentResult.paymentUrl;
+          return;
+        }
+      }
+
+      // Create notification for user
+      await createNotification(
+        session?.user?.email || '',
+        'order_confirmation',
+        'Order Confirmed!',
+        `Your order #${order.order_number} has been confirmed and is being prepared.`,
+        { orderId: order.id, orderNumber: order.order_number }
+      );
+
+      // Track analytics
+      await trackAnalyticsEvent('order_completed', {
+        order_id: order.id,
+        order_number: order.order_number,
+        total_amount: calculateTotal,
+        payment_method: paymentMethod,
+        coupon_used: !!appliedCoupon,
+        loyalty_points_used: useLoyaltyPoints
+      }, session?.user?.email || undefined);
+
+      clearCart();
+      setOrderId(order.order_number);
+      setShowSuccess(true);
+      setIsSubmitting(false);
+      
+      // Redirect to track order page
+      router.push(`/track-order?orderId=${order.order_number}`);
+    } catch (error) {
+      console.error('Order placement error:', error);
+      setErrors({ ...errors, general: 'Failed to place order. Please try again.' });
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handlePlaceOrder();
+  };
 
   if (cart.length === 0 && !showSuccess) {
     return (
