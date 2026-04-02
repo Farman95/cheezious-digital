@@ -214,7 +214,7 @@ export default function Home() {
       </header>
 
       {/* Loyalty Rewards Banner */}
-      <LoyaltyRewardsBanner />
+      <LoyaltyRewardsBanner topOffset="56px" />
 
       {/* HERO */}
       <section 

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { CartProvider } from "@/context/CartContext";
 import { ToastHost } from "@/components/ToastHost";
@@ -15,10 +15,32 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+};
+
 export const metadata: Metadata = {
-  title: "Cheezious - Pure Cheez, Pure Obsession",
-  description:
-    "Order irresistible cheesy pizzas, burgers, and platters from Cheezious. Pure cheez, pure obsession.",
+  title: "Cheezious — Pakistan Ka Favorite Cheez",
+  description: "Order irresistible cheesy pizzas, burgers, and platters from Cheezious. Pure cheez, pure obsession. 37+ branches across Pakistan.",
+  keywords: ["Cheezious", "pizza", "burgers", "Pakistan", "fast food", "Rawalpindi", "Islamabad", "Lahore"],
+  openGraph: {
+    title: "Cheezious — Pakistan Ka Favorite Cheez",
+    description: "Order hot, cheesy food delivered to your door. 37+ branches across Pakistan.",
+    type: "website",
+    locale: "en_PK",
+    siteName: "Cheezious",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Cheezious — Pakistan Ka Favorite Cheez",
+    description: "Order hot, cheesy food delivered to your door.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({

@@ -14,6 +14,7 @@ export interface Order {
   delivery_address: string
   phone: string
   payment_method: string
+  payment_status?: 'pending' | 'paid' | 'failed' | 'refunded'
   created_at?: string
   updated_at?: string
 }

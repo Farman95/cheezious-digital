@@ -38,6 +38,8 @@ export default function CheckoutPage() {
   const [selectedBranchId, setSelectedBranchId] = useState("");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
+  const [phoneValid, setPhoneValid] = useState<boolean | null>(null);
+  const [walletNumber, setWalletNumber] = useState("");
   const [address, setAddress] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -155,6 +157,11 @@ export default function CheckoutPage() {
 
   const handlePhoneChange = (value: string) => {
     setPhone(value);
+    if (value.trim() === "") {
+      setPhoneValid(null);
+    } else {
+      setPhoneValid(validatePhone(value));
+    }
   };
 
   const validate = useCallback(() => {
@@ -298,6 +305,8 @@ export default function CheckoutPage() {
         tax_amount: taxAmount,
         discount_amount: discountAmount,
         total_amount: calculateTotal,
+        status: 'pending',
+        phone: phone,
         payment_method: paymentMethod,
         payment_status: paymentMethod === 'cod' ? 'pending' : 'pending',
         delivery_address: address,

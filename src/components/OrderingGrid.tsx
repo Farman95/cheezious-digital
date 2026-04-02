@@ -6,6 +6,77 @@ import { useCart } from "@/context/CartContext";
 import { menuItems } from "@/data/menu-items";
 import { OrderCustomizationModal } from "./OrderCustomizationModal";
 
+const BLUR_DATA_URL = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAICAgIChQDDwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoGSj/2wBDAQcHBwoIChMICChMGhYaGCgoGCgoGCgoGCgoGCgoGCgoGCgoGCgoGCgoGCgoGCgoGCgoGCgoGCgoGCgoGCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8VAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCwAA8A/9k=";
+
+const getCategoryFallbackImage = (category: string) => {
+  const fallbackImages: Record<string, string> = {
+    "Special Pizza": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400",
+    "Somewhat Local": "https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?w=400",
+    "Somewhat Sooper": "https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?w=400",
+    "Cheezy Treats": "https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?w=400",
+    "Pizza Deals": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400",
+    "Sandwiches & Platters": "https://images.unsplash.com/photo-1539252554453-80ab65ce3586?w=400",
+    "Pastas": "https://images.unsplash.com/photo-1563243577-4e0556c4ca73?w=400",
+    "Burgerz": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400",
+    "Side Orders": "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=400",
+    "Addons": "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=400",
+    "Soft Drinks": "https://images.unsplash.com/photo-1554866585-acbb2d39a6c2?w=400",
+    "Starters": "https://images.unsplash.com/photo-1527477396000-e27163b481c2?w=400"
+  };
+  return fallbackImages[category] || "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400";
+};
+
+const getOriginalPriceDisplay = (priceNumber: number, itemId: string) => {
+  const wasPrices: Record<string, string> = {
+    "cheezy-sticks": "Rs. 699",
+    "oven-baked-wings": "Rs. 680",
+    "flaming-wings": "Rs. 750",
+    "calzone-chunks": "Rs. 1199",
+    "arabic-rolls": "Rs. 750",
+    "behari-rolls": "Rs. 750",
+    "crown-crust": "Rs. 1599",
+    "stuff-crust-pizza": "Rs. 1649",
+    "beef-pepperoni-thin-crust": "Rs. 1599",
+    "malai-tikka": "Rs. 1649",
+    "chicken-tikka": "Rs. 750",
+    "chicken-fajita": "Rs. 750",
+    "chicken-lover": "Rs. 750",
+    "chicken-tandoori": "Rs. 750",
+    "hot-n-spicy": "Rs. 750",
+    "vegetable-pizza": "Rs. 750",
+    "euro": "Rs. 750",
+    "chicken-supreme": "Rs. 750",
+    "black-pepper-tikka": "Rs. 750",
+    "sausage-pizza": "Rs. 750",
+    "cheese-lover-pizza": "Rs. 750",
+    "chicken-pepperoni": "Rs. 750",
+    "chicken-mushroom": "Rs. 750",
+    "cheezious-special": "Rs. 1599",
+    "behari-kabab": "Rs. 1599",
+    "chicken-extreme": "Rs. 1599",
+    "small-pizza-deal": "Rs. 899",
+    "regular-pizza-deal": "Rs. 1599",
+    "large-pizza-deal": "Rs. 2099",
+    "special-roasted-platter": "Rs. 1299",
+    "mexican-sandwich": "Rs. 999",
+    "pizza-stacker": "Rs. 999",
+    "euro-sandwich": "Rs. 999",
+    "classic-roll-platter": "Rs. 1299",
+    "fettuccine-alfredo": "Rs. 1099",
+    "crunchy-chicken-pasta": "Rs. 1099",
+    "reggy-burger": "Rs. 499",
+    "bazinga-burger": "Rs. 650",
+    "fries": "Rs. 299",
+    "nuggets": "Rs. 499",
+    "chicken-piece": "Rs. 399",
+    "juice": "Rs. 99",
+    "mayo-dip": "Rs. 120",
+    "water-small": "Rs. 99",
+    "soft-drink": "Rs. 130"
+  };
+  return wasPrices[itemId] || `Rs. ${Math.round(priceNumber * 1.25 / 10) * 10}`;
+};
+
 
 export function OrderingGrid() {
   const { addItem } = useCart();
@@ -27,75 +98,6 @@ export function OrderingGrid() {
     acc[category] = menuItems.filter(item => item.category === category);
     return acc;
   }, {} as Record<string, typeof menuItems>);
-
-  const getCategoryFallbackImage = (category: string) => {
-    const fallbackImages: Record<string, string> = {
-      "Special Pizza": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400",
-      "Somewhat Local": "https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?w=400",
-      "Somewhat Sooper": "https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?w=400",
-      "Cheezy Treats": "https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?w=400",
-      "Pizza Deals": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400",
-      "Sandwiches & Platters": "https://images.unsplash.com/photo-1539252554453-80ab65ce3586?w=400",
-      "Pastas": "https://images.unsplash.com/photo-1563243577-4e0556c4ca73?w=400",
-      "Burgerz": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400",
-      "Side Orders": "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=400",
-      "Addons": "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=400",
-      "Soft Drinks": "https://images.unsplash.com/photo-1554866585-acbb2d39a6c2?w=400",
-      "Starters": "https://images.unsplash.com/photo-1527477396000-e27163b481c2?w=400"
-    };
-    return fallbackImages[category] || "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400";
-  };
-
-const getOriginalPriceDisplay = (priceNumber: number, itemId: string) => {
-    const wasPrices: Record<string, string> = {
-      "cheezy-sticks": "Rs. 699",
-      "oven-baked-wings": "Rs. 680",
-      "flaming-wings": "Rs. 750",
-      "calzone-chunks": "Rs. 1199",
-      "arabic-rolls": "Rs. 750",
-      "behari-rolls": "Rs. 750",
-      "crown-crust": "Rs. 1599",
-      "stuff-crust-pizza": "Rs. 1649",
-      "beef-pepperoni-thin-crust": "Rs. 1599",
-      "malai-tikka": "Rs. 1649",
-      "chicken-tikka": "Rs. 750",
-      "chicken-fajita": "Rs. 750",
-      "chicken-lover": "Rs. 750",
-      "chicken-tandoori": "Rs. 750",
-      "hot-n-spicy": "Rs. 750",
-      "vegetable-pizza": "Rs. 750",
-      "euro": "Rs. 750",
-      "chicken-supreme": "Rs. 750",
-      "black-pepper-tikka": "Rs. 750",
-      "sausage-pizza": "Rs. 750",
-      "cheese-lover-pizza": "Rs. 750",
-      "chicken-pepperoni": "Rs. 750",
-      "chicken-mushroom": "Rs. 750",
-      "cheezious-special": "Rs. 1599",
-      "behari-kabab": "Rs. 1599",
-      "chicken-extreme": "Rs. 1599",
-      "small-pizza-deal": "Rs. 899",
-      "regular-pizza-deal": "Rs. 1599",
-      "large-pizza-deal": "Rs. 2099",
-      "special-roasted-platter": "Rs. 1299",
-      "mexican-sandwich": "Rs. 999",
-      "pizza-stacker": "Rs. 999",
-      "euro-sandwich": "Rs. 999",
-      "classic-roll-platter": "Rs. 1299",
-      "fettuccine-alfredo": "Rs. 1099",
-      "crunchy-chicken-pasta": "Rs. 1099",
-      "reggy-burger": "Rs. 499",
-      "bazinga-burger": "Rs. 650",
-      "fries": "Rs. 299",
-      "nuggets": "Rs. 499",
-      "chicken-piece": "Rs. 399",
-      "juice": "Rs. 99",
-      "mayo-dip": "Rs. 120",
-      "water-small": "Rs. 99",
-      "soft-drink": "Rs. 130"
-    };
-    return wasPrices[itemId] || `Rs. ${Math.round(priceNumber * 1.25 / 10) * 10}`;
-  };
 
   const handleAddClick = (item: typeof menuItems[0]) => {
     setSelectedItem(item);
@@ -169,7 +171,7 @@ const getOriginalPriceDisplay = (priceNumber: number, itemId: string) => {
                         sizes="200px"
                         loading="lazy"
                         placeholder="blur"
-                        blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAICAgIChQDDwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoGSj/2wBDAQcHBwoIChMICChMGhYaGCgoGCgoGCgoGCgoGCgoGCgoGCgoGCgoGCgoGCgoGCgoGCgoGCgoGCgoGCgoGCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8VAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCwAA8A/9k="
+                        blurDataURL={BLUR_DATA_URL}
                       />
                     </div>
 

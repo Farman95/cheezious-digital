@@ -125,7 +125,7 @@ export function CartSidebar() {
                       </button>
                     </div>
                     <span className="text-sm font-semibold text-[#1A1A1A]">
-                      {formatPrice(item.priceNumber * item.quantity)}
+                      {formatPrice(isNaN(item.priceNumber * item.quantity) ? 0 : item.priceNumber * item.quantity)}
                     </span>
                   </div>
                 </li>

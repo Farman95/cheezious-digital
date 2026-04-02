@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import type { MenuItemData } from "@/lib/cart-types";
 
@@ -19,31 +19,50 @@ export function OrderCustomizationModal({
   const [quantity, setQuantity] = useState(1);
   const [instructions, setInstructions] = useState("");
 
-  const getSizeMultiplier = (selectedSize: "small" | "regular" | "large") => {
+  const getSizeMultiplier = (selectedSize: "small" | "regular" | "large"): number => {
     if (selectedSize === "small") return 0.85;
     if (selectedSize === "large") return 1.2;
     return 1;
   };
 
-  const adjustedPrice = item.priceNumber * getSizeMultiplier(size);
-  const adjustedPriceDisplay = `Rs. ${adjustedPrice.toLocaleString("en-PK", {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  })}`;
+  const adjustedPrice = Math.round(item.priceNumber * getSizeMultiplier(size));
+  const adjustedPriceDisplay = `Rs. ${adjustedPrice.toLocaleString("en-PK")}`;
 
-  const handleConfirm = () => {
+  const handleConfirm = useCallback(() => {
     onConfirm(quantity, size, instructions);
-    onClose();
-  };
+  }, [quantity, size, instructions, onConfirm]);
+
+  // Handle scroll lock when modal is open
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, []);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
-      <div className="relative w-full max-w-md rounded-3xl border border-white/50 bg-white shadow-2xl flex flex-col max-h-[90vh] md:max-h-[95vh]">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[#1A1A1A]/60 p-4 backdrop-blur-sm animate-fadeIn"
+      role="presentation"
+      onClick={onClose}
+      onKeyDown={(e) => e.key === "Escape" && onClose()}
+    >
+      <div
+        className="relative w-full max-w-md rounded-3xl border border-white/50 bg-white shadow-2xl flex flex-col max-h-[90vh] md:max-h-[95vh] animate-slideUp"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
+        onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => { if (e.key === 'Escape') onClose(); }}
+        tabIndex={-1}
+        autoFocus
+      >
         {/* Close Button */}
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-4 top-4 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200"
+          aria-label="Close customization modal"
+          className="absolute right-4 top-4 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-[#E8420A] transition-colors"
         >
           ✕
         </button>
@@ -56,13 +75,14 @@ export function OrderCustomizationModal({
             fill
             className="object-cover"
             priority
+            sizes="(max-width: 768px) 100vw, 448px"
           />
         </div>
 
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto p-6 pb-0">
           {/* Item Details */}
-          <h2 className="text-2xl font-black text-[#1A1A1A]">{item.name}</h2>
+          <h2 id="modal-title" className="text-2xl font-black text-[#1A1A1A]">{item.name}</h2>
           {item.description && (
             <p className="mt-1 text-sm text-[#1A1A1A]/70">{item.description}</p>
           )}
@@ -75,7 +95,6 @@ export function OrderCustomizationModal({
             <div className="mt-3 grid grid-cols-3 gap-2">
               {(["small", "regular", "large"] as const).map((s) => {
                 const multiplier = getSizeMultiplier(s);
-                const sizePrice = item.priceNumber * multiplier;
                 const label = s.charAt(0).toUpperCase() + s.slice(1);
                 return (
                   <button
@@ -106,7 +125,7 @@ export function OrderCustomizationModal({
             </p>
             <textarea
               value={instructions}
-              onChange={(e) => setInstructions(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setInstructions(e.target.value)}
               placeholder="Any special requests? e.g. extra cheese, less spicy"
               className="mt-2 w-full rounded-xl border border-gray-300 px-3 py-2 text-sm placeholder:text-[#1A1A1A]/40 focus:border-[#E8420A] focus:outline-none focus:ring-2 focus:ring-[#E8420A]/20"
               rows={3}
@@ -140,22 +159,20 @@ export function OrderCustomizationModal({
           <div className="mt-4 rounded-xl bg-[#F5C500]/20 p-3">
             <p className="text-xs text-[#1A1A1A]/70">Total</p>
             <p className="mt-1 text-2xl font-black text-[#1A1A1A]">
-              Rs. {(adjustedPrice * quantity).toLocaleString("en-PK", {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0,
-              })}
+              Rs. {Math.round(adjustedPrice * quantity).toLocaleString("en-PK")}
             </p>
           </div>
         </div>
 
         {/* Sticky Footer with Add to Cart Button */}
-        <div className="sticky bottom-0 bg-white border-t border-gray-200 p-6 pt-4 flex-shrink-0">
+        <div className="sticky bottom-0 bg-white border-t border-gray-200 p-6 pt-4 flex-shrink-0 shadow-lg">
           <button
             type="button"
             onClick={handleConfirm}
-            className="w-full rounded-full bg-[#E8420A] px-4 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-white shadow-md transition-colors hover:bg-[#C73A08]"
+            aria-label={`Add ${quantity} ${item.name}${quantity > 1 ? 's' : ''} to cart`}
+            className="w-full rounded-full bg-[#E8420A] px-4 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-white shadow-md transition-all hover:bg-[#C73A08] focus:outline-none focus:ring-2 focus:ring-[#E8420A] focus:ring-offset-2 active:scale-95"
           >
-            Add to Cart
+            Add to Cart — {quantity} × {adjustedPriceDisplay}
           </button>
         </div>
       </div>
